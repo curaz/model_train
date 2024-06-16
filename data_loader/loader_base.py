@@ -61,7 +61,7 @@ class DataLoaderBase(object):
 
 
     def load_kg(self, filename):
-        kg_data = pd.read_csv(filename, sep=' ', names=['h', 'r', 't'], engine='python')
+        kg_data = pd.read_csv(filename, sep=' ', names=['h', 'r', 't'], engine='python') # df로 읽어오고 열이름은 h,r,t로 지정한다.
         kg_data = kg_data.drop_duplicates()
         return kg_data
 

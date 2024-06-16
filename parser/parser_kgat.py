@@ -4,7 +4,7 @@ import argparse
 def parse_kgat_args():
     parser = argparse.ArgumentParser(description="Run KGAT.")
 
-    parser.add_argument('--seed', type=int, default=2019,
+    parser.add_argument('--seed', type=int, default=2024,
                         help='Random seed.')
 
     parser.add_argument('--data_name', nargs='?', default='amazon-book',
@@ -12,7 +12,7 @@ def parse_kgat_args():
     parser.add_argument('--data_dir', nargs='?', default='datasets/',
                         help='Input data path.')
 
-    parser.add_argument('--use_pretrain', type=int, default=1,
+    parser.add_argument('--use_pretrain', type=int, default=0,
                         help='0: No pretrain, 1: Pretrain with the learned embeddings, 2: Pretrain with stored model.')
     parser.add_argument('--pretrain_embedding_dir', nargs='?', default='datasets/pretrain/',
                         help='Path of learned embeddings.')

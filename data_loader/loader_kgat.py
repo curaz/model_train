@@ -17,12 +17,13 @@ class DataLoaderKGAT(DataLoaderBase):
         self.cf_batch_size = args.cf_batch_size
         self.kg_batch_size = args.kg_batch_size
         self.test_batch_size = args.test_batch_size
-
+        # 임시수정!!
+        self.kg_file = 'datasets/bookflip/kg_final.txt'
         kg_data = self.load_kg(self.kg_file)
         self.construct_data(kg_data)
         self.print_info(logging)
 
-        self.laplacian_type = args.laplacian_type
+        self.laplacian_type = args.laplacian_type # random-walk
         self.create_adjacency_dict()
         self.create_laplacian_dict()
 
@@ -33,14 +34,15 @@ class DataLoaderKGAT(DataLoaderBase):
         inverse_kg_data = kg_data.copy()
         inverse_kg_data = inverse_kg_data.rename({'h': 't', 't': 'h'}, axis='columns')
         inverse_kg_data['r'] += n_relations
-        kg_data = pd.concat([kg_data, inverse_kg_data], axis=0, ignore_index=True, sort=False)
+        kg_data = pd.concat([kg_data, inverse_kg_data], axis=0, ignore_index=True, sort=False) # 세로로 concat
 
         # re-map user id
-        kg_data['r'] += 2
+        kg_data['r'] += 2 # 왜 2더함?
         self.n_relations = max(kg_data['r']) + 1
         self.n_entities = max(max(kg_data['h']), max(kg_data['t'])) + 1
         self.n_users_entities = self.n_users + self.n_entities
 
+        # 훈련 및 테스트 데이터의 사용자 ID에 self.n_entities를 더하여 재매핑합니다.
         self.cf_train_data = (np.array(list(map(lambda d: d + self.n_entities, self.cf_train_data[0]))).astype(np.int32), self.cf_train_data[1].astype(np.int32))
         self.cf_test_data = (np.array(list(map(lambda d: d + self.n_entities, self.cf_test_data[0]))).astype(np.int32), self.cf_test_data[1].astype(np.int32))
 
@@ -48,7 +50,9 @@ class DataLoaderKGAT(DataLoaderBase):
         self.test_user_dict = {k + self.n_entities: np.unique(v).astype(np.int32) for k, v in self.test_user_dict.items()}
 
         # add interactions to kg data
+        # 사용자-아이템 상호작용 데이터를 cf2kg_train_data에 추가합니다.
         cf2kg_train_data = pd.DataFrame(np.zeros((self.n_cf_train, 3), dtype=np.int32), columns=['h', 'r', 't'])
+        # head는 사용자 ID, tail은 아이템 ID로 설정합니다.
         cf2kg_train_data['h'] = self.cf_train_data[0]
         cf2kg_train_data['t'] = self.cf_train_data[1]
 
@@ -56,6 +60,7 @@ class DataLoaderKGAT(DataLoaderBase):
         inverse_cf2kg_train_data['h'] = self.cf_train_data[1]
         inverse_cf2kg_train_data['t'] = self.cf_train_data[0]
 
+        # 모든 데이터를 결합
         self.kg_train_data = pd.concat([kg_data, cf2kg_train_data, inverse_cf2kg_train_data], ignore_index=True)
         self.n_kg_train = len(self.kg_train_data)
 
@@ -64,9 +69,12 @@ class DataLoaderKGAT(DataLoaderBase):
         t_list = []
         r_list = []
 
+        # 기본값이 리스트인 사전으로 설정
         self.train_kg_dict = collections.defaultdict(list)
         self.train_relation_dict = collections.defaultdict(list)
 
+        # 각 행을 순회하면서 head, relation, tail 값을 리스트와 사전에 추가합니다.
+        # 여기 겁나 오래걸림
         for row in self.kg_train_data.iterrows():
             h, r, t = row[1]
             h_list.append(h)
