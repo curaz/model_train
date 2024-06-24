@@ -10,3 +10,4 @@ datasets/yelp2018/_rel_ecount
 __pycache__
 trained_model/
 
+data_loader/Bookflip_dataloader_new.pkl
