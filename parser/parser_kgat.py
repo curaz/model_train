@@ -61,6 +61,7 @@ def parse_kgat_args():
 
     parser.add_argument('--Ks', nargs='?', default='[20, 40, 60, 80, 100]',
                         help='Calculate metric@K when evaluating.')
+    parser.add_argument('--loader_pickle',default="Bookflip_dataloader_new.pkl")
 
     args = parser.parse_args()
 

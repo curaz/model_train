@@ -118,7 +118,7 @@ class KGAT(nn.Module):
         ego_embed = self.entity_user_embed.weight
         all_embed = [ego_embed]
 
-        for idx, layer in enumerate(self.aggregator_layers):
+        for idx, layer in enumerate(self.aggregator_layers): # 3개의 layer
             ego_embed = layer(ego_embed, self.A_in)
             norm_embed = F.normalize(ego_embed, p=2, dim=1)
             all_embed.append(norm_embed)

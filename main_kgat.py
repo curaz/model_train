@@ -15,6 +15,8 @@ from utils.metrics import *
 from utils.model_helper import *
 from data_loader.loader_kgat import DataLoaderKGAT
 
+import pickle
+
 
 def evaluate(model, dataloader, Ks, device):
     test_batch_size = dataloader.test_batch_size
@@ -215,7 +217,20 @@ def predict(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # load data
-    data = DataLoaderKGAT(args, logging)
+    if args.loader_pickle == "None":
+        print("constructing new data!") 
+
+        with open("Bookflip_dataloader_new.pkl", "wb") as f:
+            data = DataLoaderKGAT(args,logging)
+            pickle.dump(data, f)
+            print("dumped pickle!")
+
+    else:
+        with open(args.loader_pickle, "rb") as f:
+            print("bringing the data loader from pickle")
+            data = pickle.load(f)
+            print("loaded pickle")
+
 
     # load model
     model = KGAT(args, data.n_users, data.n_entities, data.n_relations)
@@ -232,11 +247,64 @@ def predict(args):
     print('CF Evaluation: Precision [{:.4f}, {:.4f}], Recall [{:.4f}, {:.4f}], NDCG [{:.4f}, {:.4f}]'.format(
         metrics_dict[k_min]['precision'], metrics_dict[k_max]['precision'], metrics_dict[k_min]['recall'], metrics_dict[k_max]['recall'], metrics_dict[k_min]['ndcg'], metrics_dict[k_max]['ndcg']))
 
+def recommand(arg,user_ids):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # load data
+    if args.loader_pickle == "None":
+        print("constructing new data!") 
+
+        with open("Bookflip_dataloader_new.pkl", "wb") as f:
+            data = DataLoaderKGAT(args,logging)
+            pickle.dump(data, f)
+            print("dumped pickle!")
+
+    else:
+        with open(args.loader_pickle, "rb") as f:
+            print("bringing the data loader from pickle")
+            data = pickle.load(f)
+            print("loaded pickle")
+
+    model = KGAT(args, data.n_users, data.n_entities, data.n_relations)
+    model = load_model(model, args.pretrain_model_path)
+    model.to(device)
+
+    # evaluate부분
+    # test_batch_size = data.test_batch_size
+    train_user_dict = data.train_user_dict
+    # test_user_dict = data.test_user_dict
+
+    model.eval()
+
+    n_items = data.n_items
+    item_ids = torch.arange(n_items, dtype=torch.long).to(device)
+
+    cf_scores = []
+    remap_user_ids = [user_id+data.n_entities for user_id in user_ids]
+    with torch.no_grad():
+        batch_scores = model(remap_user_ids, item_ids, mode='predict')
+
+    batch_scores = batch_scores.cpu()
+
+    # test_pos_item_binary = np.zeros([len(user_ids), len(item_ids)], dtype=np.float32)
+    for idx, u in enumerate(remap_user_ids):
+        train_pos_item_list = train_user_dict[u]
+        # test_pos_item_list = test_user_dict[u]
+        batch_scores[idx][train_pos_item_list] = -np.inf # 학습 단계의 아이템을 추천해주지않기위해 -무한대 처리 해버림
+        # test_pos_item_binary[idx][test_pos_item_list] = 1 # 테스트 단계에서 정답 아이템
+
+    try:
+        _, rank_indices = torch.sort(batch_scores.cuda(), descending=True)    # try to speed up the sorting process
+    except:
+        _, rank_indices = torch.sort(batch_scores, descending=True)
+    rank_indices = rank_indices.cpu()
+
+    return rank_indices
 
 
 if __name__ == '__main__':
     args = parse_kgat_args()
-    train(args)
+    # train(args)
     # predict(args)
-
-
+    rank_indices = recommand(args,[14858])
+    print(rank_indices)

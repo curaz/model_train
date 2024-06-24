@@ -123,8 +123,8 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
     for idx, u in enumerate(user_ids):
         train_pos_item_list = train_user_dict[u]
         test_pos_item_list = test_user_dict[u]
-        cf_scores[idx][train_pos_item_list] = -np.inf
-        test_pos_item_binary[idx][test_pos_item_list] = 1
+        cf_scores[idx][train_pos_item_list] = -np.inf # 학습 단계의 아이템을 추천해주지않기위해 -무한대 처리 해버림
+        test_pos_item_binary[idx][test_pos_item_list] = 1 # 테스트 단계에서 정답 아이템
 
     try:
         _, rank_indices = torch.sort(cf_scores.cuda(), descending=True)    # try to speed up the sorting process
@@ -144,5 +144,3 @@ def calc_metrics_at_k(cf_scores, train_user_dict, test_user_dict, user_ids, item
         metrics_dict[k]['recall']    = recall_at_k_batch(binary_hit, k)
         metrics_dict[k]['ndcg']      = ndcg_at_k_batch(binary_hit, k)
     return metrics_dict
-
-
