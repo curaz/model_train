@@ -301,10 +301,23 @@ def recommand(arg,user_ids):
 
     return rank_indices
 
+def get_ids_from_remap_ids(remap_id_values, file_path = "datasets/bookflip/item_list.csv"):
+    remap_id_values = remap_id_values.tolist()
+    df = pd.read_csv(file_path)
+    id_values = []
+    remap_id_values = remap_id_values[0][:10]
+    for remap_id_value in remap_id_values:
+        result_row = df[df['remap_id'] == remap_id_value]
+        if not result_row.empty:
+            id_values.append(result_row['id'].values[0])
+        else:
+            id_values.append(None)
+
+    return id_values
 
 if __name__ == '__main__':
     args = parse_kgat_args()
     # train(args)
     # predict(args)
     rank_indices = recommand(args,[14858])
-    print(rank_indices)
+    print(get_ids_from_remap_ids(rank_indices))
