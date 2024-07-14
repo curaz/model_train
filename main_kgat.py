@@ -281,6 +281,7 @@ def recommand(arg,user_ids):
 
     cf_scores = []
     remap_user_ids = [user_id+data.n_entities for user_id in user_ids]
+    # item_ids => remap_user_ids : 유저 유사성
     with torch.no_grad():
         batch_scores = model(remap_user_ids, item_ids, mode='predict')
 
@@ -301,10 +302,70 @@ def recommand(arg,user_ids):
 
     return rank_indices
 
+def recommand_user(arg,user_ids):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # load data
+    if args.loader_pickle == "None":
+        print("constructing new data!") 
+
+        with open("Bookflip_dataloader_new.pkl", "wb") as f:
+            data = DataLoaderKGAT(args,logging)
+            pickle.dump(data, f)
+            print("dumped pickle!")
+
+    else:
+        with open(args.loader_pickle, "rb") as f:
+            print("bringing the data loader from pickle")
+            data = pickle.load(f)
+            print("loaded pickle")
+
+    model = KGAT(args, data.n_users, data.n_entities, data.n_relations)
+    model = load_model(model, args.pretrain_model_path)
+    model.to(device)
+
+    model.eval()
+
+    n_items = data.n_items
+    item_ids = torch.arange(n_items, dtype=torch.long).to(device)
+
+    cf_scores = []
+    remap_user_ids = [user_id+data.n_entities for user_id in user_ids]
+    # item_ids => remap_user_ids : 유저 유사성
+    with torch.no_grad():
+        user_batch_scores = model(remap_user_ids, remap_user_ids, mode='predict')
+    user_batch_scores = user_batch_scores.cpu()
+
+    try:
+        _, rank_indices = torch.sort(user_batch_scores.cuda(), descending=True)    # try to speed up the sorting process
+    except:
+        _, rank_indices = torch.sort(user_batch_scores, descending=True)
+    rank_indices = rank_indices.cpu()
+
+    return rank_indices
+
+def get_ids_from_remap_ids(remap_id_values, file_path = "item_list.csv"):
+    remap_id_values = remap_id_values.tolist()
+    df = pd.read_csv(file_path)
+    id_values = []
+    remap_id_values = remap_id_values[0][:10]
+    for remap_id_value in remap_id_values:
+        result_row = df[df['remap_id'] == remap_id_value]
+        if not result_row.empty:
+            id_values.append(result_row['id'].values[0])
+        else:
+            id_values.append(None)
+
+    return id_values
+
+def user_id_to_int(user_id, file_path = "user_list.csv"):
+    df = pd.read_csv(file_path)
+    return int(df[df['id']==user_id]['remap_id'])
 
 if __name__ == '__main__':
     args = parse_kgat_args()
-    train(args)
-    # predict(args)
-    # rank_indices = recommand(args,[14858])
-    # print(rank_indices)
+    user_id = input()
+    rank_indices = recommand(args,[user_id_to_int(user_id)])
+    user_rank_indices = recommand_user(args, [user_id_to_int(user_id)])
+    print(get_ids_from_remap_ids(rank_indices))
+    print(user_rank_indices)
