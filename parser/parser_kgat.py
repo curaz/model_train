@@ -7,7 +7,7 @@ def parse_kgat_args():
     parser.add_argument('--seed', type=int, default=2024,
                         help='Random seed.')
 
-    parser.add_argument('--data_name', nargs='?', default='amazon-book',
+    parser.add_argument('--data_name', nargs='?', default='bookflip',
                         help='Choose a dataset from {yelp2018, last-fm, amazon-book}')
     parser.add_argument('--data_dir', nargs='?', default='datasets/',
                         help='Input data path.')
@@ -16,7 +16,7 @@ def parse_kgat_args():
                         help='0: No pretrain, 1: Pretrain with the learned embeddings, 2: Pretrain with stored model.')
     parser.add_argument('--pretrain_embedding_dir', nargs='?', default='datasets/pretrain/',
                         help='Path of learned embeddings.')
-    parser.add_argument('--pretrain_model_path', nargs='?', default='trained_model/model.pth',
+    parser.add_argument('--pretrain_model_path', nargs='?', default='trained_model/KGAT/bookflip/model_epoch50.pth',
                         help='Path of stored model.')
 
     parser.add_argument('--cf_batch_size', type=int, default=1024,
@@ -61,7 +61,7 @@ def parse_kgat_args():
 
     parser.add_argument('--Ks', nargs='?', default='[20, 40, 60, 80, 100]',
                         help='Calculate metric@K when evaluating.')
-    parser.add_argument('--loader_pickle',default="Bookflip_dataloader_new.pkl")
+    parser.add_argument('--loader_pickle',default='None')
 
     args = parser.parse_args()
 

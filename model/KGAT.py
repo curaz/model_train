@@ -237,11 +237,12 @@ class KGAT(nn.Module):
         all_embed = self.calc_cf_embeddings()           # (n_users + n_entities, concat_dim)
         user_embed = all_embed[user_ids]                # (n_users, concat_dim)
         item_embed = all_embed[item_ids]                # (n_items, concat_dim)
-
+        # item_embed 행렬 : (책의 개수) * 32
+        
         # Equation (12)
         cf_score = torch.matmul(user_embed, item_embed.transpose(0, 1))    # (n_users, n_items)
+        # 유저 간의 유사도 확인 : torch.matmul(user_embed1, user_embed2.transpose(0, 1))
         return cf_score
-
 
     def forward(self, *input, mode):
         if mode == 'train_cf':
