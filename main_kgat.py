@@ -314,6 +314,7 @@ def recommand_user(arg,user_ids):
             pickle.dump(data, f)
             print("dumped pickle!")
 
+
     else:
         with open(args.loader_pickle, "rb") as f:
             print("bringing the data loader from pickle")
@@ -332,10 +333,11 @@ def recommand_user(arg,user_ids):
     cf_scores = []
     remap_user_ids = [user_id+data.n_entities for user_id in user_ids]
     # item_ids => remap_user_ids : 유저 유사성
+    print(remap_user_ids)
     with torch.no_grad():
         user_batch_scores = model(remap_user_ids, remap_user_ids, mode='predict')
     user_batch_scores = user_batch_scores.cpu()
-
+    print(user_batch_scores)
     try:
         _, rank_indices = torch.sort(user_batch_scores.cuda(), descending=True)    # try to speed up the sorting process
     except:
@@ -364,7 +366,7 @@ def user_id_to_int(user_id, file_path = "user_list.csv"):
 
 if __name__ == '__main__':
     args = parse_kgat_args()
-    user_id = input()
+    user_id = input("유저 아니디를 입력해주세요!")
     rank_indices = recommand(args,[user_id_to_int(user_id)])
     user_rank_indices = recommand_user(args, [user_id_to_int(user_id)])
     print(get_ids_from_remap_ids(rank_indices))

@@ -7,12 +7,7 @@ def parse_kgat_args():
     parser.add_argument('--seed', type=int, default=2024,
                         help='Random seed.')
 
-    parser.add_argument('--data_name', nargs='?', default='bookflip',
-<<<<<<< HEAD
-                        help='Choose a dataset from {yelp2018, last-fm, amazon-book}')
-=======
-                        help='default bookflip')
->>>>>>> main
+    parser.add_argument('--data_name', nargs='?', default='bookflip',help='default bookflip')
     parser.add_argument('--data_dir', nargs='?', default='datasets/',
                         help='Input data path.')
 
@@ -65,11 +60,8 @@ def parse_kgat_args():
 
     parser.add_argument('--Ks', nargs='?', default='[20, 40, 60, 80, 100]',
                         help='Calculate metric@K when evaluating.')
-<<<<<<< HEAD
+
     parser.add_argument('--loader_pickle',default='None')
-=======
-    parser.add_argument('--loader_pickle',default="None")
->>>>>>> main
 
     args = parser.parse_args()
 
