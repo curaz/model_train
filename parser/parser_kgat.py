@@ -7,8 +7,8 @@ def parse_kgat_args():
     parser.add_argument('--seed', type=int, default=2024,
                         help='Random seed.')
 
-    parser.add_argument('--data_name', nargs='?', default='amazon-book',
-                        help='Choose a dataset from {yelp2018, last-fm, amazon-book}')
+    parser.add_argument('--data_name', nargs='?', default='bookflip',
+                        help='default bookflip')
     parser.add_argument('--data_dir', nargs='?', default='datasets/',
                         help='Input data path.')
 
@@ -47,7 +47,7 @@ def parse_kgat_args():
 
     parser.add_argument('--lr', type=float, default=0.0001,
                         help='Learning rate.')
-    parser.add_argument('--n_epoch', type=int, default=1000,
+    parser.add_argument('--n_epoch', type=int, default=10,
                         help='Number of epoch.')
     parser.add_argument('--stopping_steps', type=int, default=10,
                         help='Number of epoch for early stopping')

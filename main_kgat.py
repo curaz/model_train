@@ -304,7 +304,7 @@ def recommand(arg,user_ids):
 
 if __name__ == '__main__':
     args = parse_kgat_args()
-    # train(args)
+    train(args)
     # predict(args)
-    rank_indices = recommand(args,[14858])
-    print(rank_indices)
+    # rank_indices = recommand(args,[14858])
+    # print(rank_indices)
