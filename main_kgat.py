@@ -336,15 +336,14 @@ def recommand_user(arg,user_ids):
     remap_user_ids = [user_id+data.n_entities for user_id in user_ids]
     # item_ids => remap_user_ids : 유저 유사성
     with torch.no_grad():
-        user_batch_scores = model(remap_user_ids, remap_user_ids, mode='predict')
-    user_batch_scores = user_batch_scores.cpu()
-    print(train_user_dict)
-    for idx, u in enumerate(remap_user_ids):
-        train_pos_item_list = train_user_dict[u]
-        print(train_pos_item_list)
-        # test_pos_item_list = test_user_dict[u]
-        user_batch_scores[idx][train_pos_item_list] = -np.inf # 학습 단계의 아이템을 추천해주지않기위해 -무한대 처리 해버림
-        # test_pos_item_binary[idx][test_pos_item_list] = 1 # 테스트 단계에서 정답 아이템
+        user_batch_scores = model(remap_user_ids, mode='recommand_user')
+    # print(train_user_dict)
+    # for idx, u in enumerate(remap_user_ids):
+    #     train_pos_item_list = train_user_dict[u]
+    #     print(train_pos_item_list)
+    #     # test_pos_item_list = test_user_dict[u]
+    #     user_batch_scores[idx][train_pos_item_list] = -np.inf # 학습 단계의 아이템을 추천해주지않기위해 -무한대 처리 해버림
+    #     # test_pos_item_binary[idx][test_pos_item_list] = 1 # 테스트 단계에서 정답 아이템
 
     try:
         _, rank_indices = torch.sort(user_batch_scores.cuda(), descending=True)    # try to speed up the sorting process
