@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
-      "args": "--data_name bookflip --pretrain_model_path trained_model/KGAT/bookflip/model_epoch50.pth --loader_pickle /Users/suhyeon/Desktop/kgat/KGAT-pytorch/data_loader/Bookflip_dataloader_new.pkl"
+      "args": "--data_name bookflip --pretrain_model_path trained_model/KGAT/bookflip/model_epoch50.pth --loader_pickle None"
     }
   ]
 }
