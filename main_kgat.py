@@ -289,8 +289,11 @@ def recommand(arg,user_ids):
 
     # test_pos_item_binary = np.zeros([len(user_ids), len(item_ids)], dtype=np.float32)
     for idx, u in enumerate(remap_user_ids):
-        train_pos_item_list = train_user_dict[u]
+        try:    
+            train_pos_item_list = train_user_dict[u]
         # test_pos_item_list = test_user_dict[u]
+        except:
+            continue
         batch_scores[idx][train_pos_item_list] = -np.inf # 학습 단계의 아이템을 추천해주지않기위해 -무한대 처리 해버림
         # test_pos_item_binary[idx][test_pos_item_list] = 1 # 테스트 단계에서 정답 아이템
 
@@ -353,7 +356,7 @@ def recommand_user(arg,user_ids):
 
     return rank_indices
 
-def get_ids_from_remap_ids(remap_id_values, file_path = "item_list.csv"):
+def get_ids_from_remap_ids(remap_id_values, file_path):
     remap_id_values = remap_id_values.tolist()
     df = pd.read_csv(file_path)
     id_values = []
@@ -373,8 +376,8 @@ def user_id_to_int(user_id, file_path = "user_list.csv"):
 
 if __name__ == '__main__':
     args = parse_kgat_args()
-    user_id = input("유저 아니디를 입력해주세요!")
+    user_id = input("유저 아이디를 입력해주세요!")
     rank_indices = recommand(args,[user_id_to_int(user_id)])
     user_rank_indices = recommand_user(args, [user_id_to_int(user_id)])
-    print(get_ids_from_remap_ids(rank_indices))
-    print(user_rank_indices)
+    print("추천 책 ID: ", get_ids_from_remap_ids(rank_indices, 'item_list.csv'))
+    print("추천 유저 ID: ",get_ids_from_remap_ids(user_rank_indices, 'user_list.csv'))
