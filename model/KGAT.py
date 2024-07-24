@@ -249,9 +249,9 @@ class KGAT(nn.Module):
         """
         all_embed = self.calc_cf_embeddings()           # (n_users + n_entities, concat_dim)
         user_embed = all_embed[user_ids]                # (n_users, concat_dim)
-        item_embed = all_embed[:self.n_users]                # (n_items, concat_dim)
+        all_user_embed = all_embed[:self.n_users]                # (n_items, concat_dim)
         
-        cf_score = torch.matmul(user_embed, item_embed.transpose(0, 1))    # (n_users, n_items)
+        cf_score = torch.matmul(user_embed, all_user_embed.transpose(0, 1))    # (n_users, n_items)
         
         return cf_score
 
