@@ -28,7 +28,7 @@ tqdm==4.65.0
 
 
 ### Run python
-실행시 top-K의 hash id의 결과를 받을 수 있습니다.
+실행 시 top-K의 hash id의 결과를 받을 수 있습니다.
 ```bash
 python main_kgat.py
 ```
