@@ -12,11 +12,10 @@
 - 추천 방법은 총 2가지인데, 메타데이터를 기반으로 팔로우할 만한 유저 추천, 같은 아이템에 관심을 가진 유저가 선호한 다른 아이템을 추천하도록 합니다. 즉 1번 - 유사한 유저, 2번 - 선호할 만한 아이템을 출력하도록 모델을 학습합니다.
 - 업로드된 유저 관련 csv는 모두 hash id로 처리되어있습니다.
 
-## run
-```bash
-python main_kgat.py
-```
-## requirements
+## 모델 추론
+
+
+### requirements
 ```
 scikit-learn==1.3.0
 scipy==1.11.1
@@ -25,4 +24,11 @@ pandas==2.0.3
 torch==2.1.2
 python == 3.11.5
 tqdm==4.65.0
+```
+
+
+### Run python
+실행시 top-K의 hash id의 결과를 받을 수 있습니다.
+```bash
+python main_kgat.py
 ```
