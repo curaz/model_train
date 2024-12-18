@@ -1,4 +1,4 @@
-# BOAZ 21기 팀 꾸라즈 ADV 프로젝트
+# BOAZ 21기 꾸라즈 ADV 프로젝트: 인생책을 찾아주는 큐레이션 추천시스템
 
 > [BOAZ 발표자료 바로가기](https://www.slideshare.net/slideshow/20-boaz-pdf/270919489)
 
